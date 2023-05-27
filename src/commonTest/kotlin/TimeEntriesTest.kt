@@ -28,8 +28,7 @@ class TimeEntriesTest {
     private val day4 = day3.plus(1, DateTimeUnit.DAY)
 
     private val futureTime = Clock.System.now().plus(1, DateTimeUnit.MINUTE)
-    private val time0 = Clock.System.now().minus(1, DateTimeUnit.HOUR)
-    private val time1 = time0.plus(30, DateTimeUnit.MINUTE)
+    private val oneHourAgo = Clock.System.now().minus(1, DateTimeUnit.HOUR)
 
     @BeforeTest
     fun beforeEach() {
@@ -67,6 +66,25 @@ class TimeEntriesTest {
                 timeEntryAcrossTwoDays,
             )
         )
+    }
+
+    @Test
+    fun testConstructorValidation() {
+        val instant0 = Instant.fromEpochSeconds(0)
+        val instant60 = Instant.fromEpochSeconds(60)
+        val instant120 = Instant.fromEpochSeconds(120)
+
+        assertFails {
+            TimeEntries(mutableListOf(TimeEntry(instant0, instant120), TimeEntry(instant60)))
+        }
+
+        assertFails {
+            TimeEntries(mutableListOf(TimeEntry(instant0), TimeEntry(instant60, instant120)))
+        }
+
+        assertFails {
+            TimeEntries(mutableListOf(TimeEntry(instant60), TimeEntry(instant0, instant120)))
+        }
     }
 
     @Test
@@ -276,23 +294,23 @@ class TimeEntriesTest {
 
         assertEquals(ClockResult.TIME_TOO_EARLY, timeEntries3.clockIn(timeEntry0.start))
 
-        assertEquals(ClockResult.SUCCESS, timeEntries1.clockIn(time0))
-        assertEquals(time0, timeEntries1.entries.first().start)
+        assertEquals(ClockResult.SUCCESS, timeEntries1.clockIn(oneHourAgo))
+        assertEquals(oneHourAgo, timeEntries1.entries.first().start)
 
-        assertEquals(ClockResult.NO_OP, timeEntries2.clockIn(time0))
+        assertEquals(ClockResult.NO_OP, timeEntries2.clockIn(oneHourAgo))
 
-        assertEquals(ClockResult.SUCCESS, timeEntries3.clockIn(time0))
-        assertEquals(time0, timeEntries3.entries.last().start)
+        assertEquals(ClockResult.SUCCESS, timeEntries3.clockIn(oneHourAgo))
+        assertEquals(oneHourAgo, timeEntries3.entries.last().start)
 
-        assertEquals(ClockResult.NO_OP, timeEntries4.clockIn(time0))
+        assertEquals(ClockResult.NO_OP, timeEntries4.clockIn(oneHourAgo))
 
-        assertEquals(ClockResult.NO_OP, timeEntries5.clockIn(time0))
+        assertEquals(ClockResult.NO_OP, timeEntries5.clockIn(oneHourAgo))
 
-        assertEquals(ClockResult.SUCCESS, timeEntries6.clockIn(time0))
-        assertEquals(time0, timeEntries6.entries.last().start)
+        assertEquals(ClockResult.SUCCESS, timeEntries6.clockIn(oneHourAgo))
+        assertEquals(oneHourAgo, timeEntries6.entries.last().start)
 
-        assertEquals(ClockResult.SUCCESS, timeEntries7.clockIn(time0))
-        assertEquals(time0, timeEntries7.entries.last().start)
+        assertEquals(ClockResult.SUCCESS, timeEntries7.clockIn(oneHourAgo))
+        assertEquals(oneHourAgo, timeEntries7.entries.last().start)
     }
 
     @Test
@@ -301,22 +319,22 @@ class TimeEntriesTest {
 
         assertEquals(ClockResult.TIME_TOO_EARLY, timeEntries4.clockOut(timeEntry120to300.start))
 
-        assertEquals(ClockResult.NO_OP, timeEntries1.clockOut(time0))
+        assertEquals(ClockResult.NO_OP, timeEntries1.clockOut(oneHourAgo))
 
-        assertEquals(ClockResult.SUCCESS, timeEntries2.clockOut(time0))
-        assertEquals(time0, timeEntries2.entries.first().end)
+        assertEquals(ClockResult.SUCCESS, timeEntries2.clockOut(oneHourAgo))
+        assertEquals(oneHourAgo, timeEntries2.entries.first().end)
 
-        assertEquals(ClockResult.NO_OP, timeEntries3.clockOut(time0))
+        assertEquals(ClockResult.NO_OP, timeEntries3.clockOut(oneHourAgo))
 
-        assertEquals(ClockResult.SUCCESS, timeEntries4.clockOut(time0))
-        assertEquals(time0, timeEntries4.entries.last().end)
+        assertEquals(ClockResult.SUCCESS, timeEntries4.clockOut(oneHourAgo))
+        assertEquals(oneHourAgo, timeEntries4.entries.last().end)
 
-        assertEquals(ClockResult.SUCCESS, timeEntries5.clockOut(time0))
-        assertEquals(time0, timeEntries5.entries.last().end)
+        assertEquals(ClockResult.SUCCESS, timeEntries5.clockOut(oneHourAgo))
+        assertEquals(oneHourAgo, timeEntries5.entries.last().end)
 
-        assertEquals(ClockResult.NO_OP, timeEntries6.clockOut(time0))
+        assertEquals(ClockResult.NO_OP, timeEntries6.clockOut(oneHourAgo))
 
-        assertEquals(ClockResult.NO_OP, timeEntries7.clockOut(time0))
+        assertEquals(ClockResult.NO_OP, timeEntries7.clockOut(oneHourAgo))
     }
 
     @Test

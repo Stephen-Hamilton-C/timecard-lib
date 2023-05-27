@@ -12,19 +12,11 @@ class TimeEntries(
     override val isClockedOut: Boolean
         get() = !isClockedIn
 
-    // TODO: Make a LoadResult
-    override fun load(data: String) {
-        _entries.clear()
+    init {
+        validateEntries()
+    }
 
-        val entriesData = data.split(";")
-        for(entryData in entriesData) {
-            if(entryData.isEmpty()) continue
-
-            val entry = TimeEntry.from(entryData)
-            _entries.add(entry)
-        }
-
-        // Validate entries
+    private fun validateEntries() {
         var previousInstant = Instant.fromEpochSeconds(0)
         for(entry in _entries) {
             val isLastEntry = entry == _entries.last()
@@ -40,6 +32,20 @@ class TimeEntries(
             if(entry.end != null)
                 previousInstant = entry.end
         }
+    }
+
+    override fun load(data: String) {
+        _entries.clear()
+
+        val entriesData = data.split(";")
+        for(entryData in entriesData) {
+            if(entryData.isEmpty()) continue
+
+            val entry = TimeEntry.from(entryData)
+            _entries.add(entry)
+        }
+
+        validateEntries()
     }
     override fun toString(): String = _entries.joinToString(";")
 
