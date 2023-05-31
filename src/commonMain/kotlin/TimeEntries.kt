@@ -145,7 +145,18 @@ class TimeEntries(
             val nextEntry = entriesForDate.getOrNull(i + 1)
 
             if(currentEntry.end != null) {
-                val nextStartTime = nextEntry?.start ?: Clock.System.now()
+                val nextStartTime = nextEntry?.start ?: {
+                    // Check if NOW is the same day as the last entry
+                    val now = Clock.System.now()
+                    if(now.toLocalDate() == currentEntry.end.toLocalDate()) {
+                        // Same day, count minutes to now as break
+                        now
+                    } else {
+                        // Not the same day, likely looking at history
+                        continue
+                    }
+                }
+
                 val duration = nextStartTime - currentEntry.end
                 totalMinutes += duration.inWholeMinutes
             }
