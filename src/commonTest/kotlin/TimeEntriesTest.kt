@@ -408,7 +408,26 @@ class TimeEntriesTest {
 
     @Test
     fun testCalculateMinutesOnBreak() {
-        TODO("Not implemented yet")
+        assertEquals(0, timeEntries1.calculateMinutesOnBreak(day3))
+        assertEquals(0, timeEntries2.calculateMinutesOnBreak(day3))
+        assertEquals(0, timeEntries3.calculateMinutesOnBreak(day3))
+        assertEquals(0, timeEntries4.calculateMinutesOnBreak(day3))
+        assertEquals(0, timeEntries5.calculateMinutesOnBreak(day3))
+        assertEquals(0, timeEntries6.calculateMinutesOnBreak(day3))
+        assertEquals(0, timeEntries7.calculateMinutesOnBreak(day3))
+
+        assertEquals(0, timeEntries1.calculateMinutesOnBreak(day0))
+        assertEquals(0, timeEntries2.calculateMinutesOnBreak(day0))
+        assertEquals(1, timeEntries3.calculateMinutesOnBreak(day0))
+        assertEquals(4, timeEntries4.calculateMinutesOnBreak(day0))
+        assertEquals(0, timeEntries5.calculateMinutesOnBreak(day0))
+        assertEquals(0, timeEntries5.calculateMinutesOnBreak(day1))
+        assertEquals(0, timeEntries6.calculateMinutesOnBreak(day0))
+        assertEquals(0, timeEntries6.calculateMinutesOnBreak(day1))
+        assertEquals(0, timeEntries6.calculateMinutesOnBreak(day2))
+        assertEquals(1, timeEntries7.calculateMinutesOnBreak(day0))
+        assertEquals(0, timeEntries7.calculateMinutesOnBreak(day1))
+        assertEquals(0, timeEntries7.calculateMinutesOnBreak(day2))
     }
 
     @Test
@@ -416,23 +435,46 @@ class TimeEntriesTest {
         val eightHrsInMin = 8L * 60L
         val eightHrsInSec = eightHrsInMin * 60L
         val now = Clock.System.now()
-        assertEquals(
-            now.plus(eightHrsInMin, DateTimeUnit.MINUTE).epochSeconds,
-            timeEntries1.calculateExpectedEndTime(eightHrsInMin).epochSeconds
-        )
+        assertNull(timeEntries1.calculateExpectedEndTime(eightHrsInMin))
         assertEquals(
             Instant.fromEpochSeconds(eightHrsInSec).epochSeconds,
-            timeEntries2.calculateExpectedEndTime(eightHrsInMin).epochSeconds
-        )
-        // TODO: Figure out if this logic is wrong or if the function is wrong
-        assertEquals(
-            Instant.fromEpochSeconds(eightHrsInSec + 60).epochSeconds,
-            timeEntries3.calculateExpectedEndTime(eightHrsInMin).epochSeconds
+            timeEntries2.calculateExpectedEndTime(eightHrsInMin, day0).epochSeconds
         )
         assertEquals(
             Instant.fromEpochSeconds(eightHrsInSec + 4 * 60).epochSeconds,
-            timeEntries4.calculateExpectedEndTime(eightHrsInMin).epochSeconds
+            timeEntries3.calculateExpectedEndTime(eightHrsInMin, day0).epochSeconds
         )
-        TODO("Not finished yet")
+        assertEquals(
+            Instant.fromEpochSeconds(eightHrsInSec + 4 * 60).epochSeconds,
+            timeEntries4.calculateExpectedEndTime(eightHrsInMin, day0).epochSeconds
+        )
+        assertEquals(
+            Instant.fromEpochSeconds(eightHrsInSec).epochSeconds,
+            timeEntries5.calculateExpectedEndTime(eightHrsInMin, day0).epochSeconds
+        )
+        assertEquals(
+            timeEntryInDay1.start.plus(eightHrsInMin, DateTimeUnit.MINUTE).epochSeconds,
+            timeEntries5.calculateExpectedEndTime(eightHrsInMin, day1).epochSeconds
+        )
+        assertEquals(
+            timeEntryInDay2NoEnd.start.plus(eightHrsInMin, DateTimeUnit.MINUTE).epochSeconds,
+            timeEntries5.calculateExpectedEndTime(eightHrsInMin, day2).epochSeconds
+        )
+        assertEquals(
+            timeEntryInDay2.plus(eightHrsInMin, DateTimeUnit.MINUTE).epochSeconds,
+            timeEntries6.calculateExpectedEndTime(eightHrsInMin, day1).epochSeconds
+        )
+        assertEquals(
+            Instant.fromEpochSeconds(eightHrsInSec + 4 * 60).epochSeconds,
+            timeEntries7.calculateExpectedEndTime(eightHrsInMin, day0).epochSeconds
+        )
+        assertEquals(
+            timeEntryAcrossTwoDays.plus(eightHrsInMin, DateTimeUnit.MINUTE).epochSeconds,
+            timeEntries7.calculateExpectedEndTime(eightHrsInMin, day1).epochSeconds
+        )
+        assertEquals(
+            timeEntryAcrossTwoDays.plus(eightHrsInMin, DateTimeUnit.MINUTE).epochSeconds,
+            timeEntries7.calculateExpectedEndTime(eightHrsInMin, day2).epochSeconds
+        )
     }
 }
