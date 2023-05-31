@@ -17,5 +17,5 @@ interface ITimeEntries {
     fun undo(): UndoResult
     fun calculateMinutesWorked(date: LocalDate = LocalDate.today()): Long
     fun calculateMinutesOnBreak(date: LocalDate = LocalDate.today()): Long
-    fun calculateExpectedEndTime(minutesToWork: Long): Instant
+    fun calculateExpectedEndTime(minutesToWork: Long, date: LocalDate = LocalDate.today()): Instant
 }

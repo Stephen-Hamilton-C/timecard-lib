@@ -165,10 +165,13 @@ class TimeEntries(
         return totalMinutes
     }
 
-    override fun calculateExpectedEndTime(minutesToWork: Long): Instant {
-        val minutesOnBreak = calculateMinutesOnBreak()
+    override fun calculateExpectedEndTime(minutesToWork: Long, date: LocalDate): Instant? {
+        val minutesOnBreak = calculateMinutesOnBreak(date)
 
-        val startTime = _entries.firstOrNull()?.start ?: Clock.System.now()
+        val entriesForDate = filterByDay(date)
+        if(entriesForDate.isEmpty() && date.toLocalDate() != LocalDate.today()) return null
+
+        val startTime = entriesForDate.firstOrNull()?.start ?: Clock.System.now()
         return startTime.plus(minutesToWork + minutesOnBreak, DateTimeUnit.MINUTE)
     }
 }
