@@ -1,5 +1,9 @@
+package com.github.stephenhamiltonc.timecard
+
+import com.github.stephenhamiltonc.timecard.result.CleanResult
+import com.github.stephenhamiltonc.timecard.result.ClockResult
+import com.github.stephenhamiltonc.timecard.result.UndoResult
 import kotlinx.datetime.*
-import result.*
 
 class TimeEntries(
     private val _entries: MutableList<TimeEntry> = mutableListOf()

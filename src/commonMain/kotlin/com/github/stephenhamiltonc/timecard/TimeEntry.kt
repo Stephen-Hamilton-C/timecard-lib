@@ -1,7 +1,9 @@
+package com.github.stephenhamiltonc.timecard
+
 import kotlinx.datetime.Instant
 import kotlin.jvm.JvmStatic
 
-class TimeEntry(val start: Instant, val end: Instant? = null) {
+data class TimeEntry(val start: Instant, val end: Instant? = null) {
     init {
         if(end != null && start > end)
             throw IllegalStateException("A TimeEntry cannot have a start time that is after an end time!")
@@ -26,14 +28,5 @@ class TimeEntry(val start: Instant, val end: Instant? = null) {
         } else {
             "${start.epochSeconds},${end.epochSeconds}"
         }
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if(other == null) return false
-        if(other === this) return true
-        if(other is TimeEntry)
-            return other.start == this.start && other.end == this.end
-
-        return false
     }
 }

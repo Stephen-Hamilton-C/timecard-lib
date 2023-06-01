@@ -1,3 +1,5 @@
+package com.github.stephenhamiltonc.timecard
+
 import kotlinx.datetime.Instant
 import kotlin.test.BeforeTest
 import kotlin.test.Test

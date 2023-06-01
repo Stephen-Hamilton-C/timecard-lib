@@ -1,7 +1,11 @@
+package com.github.stephenhamiltonc.timecard
+
+import com.github.stephenhamiltonc.timecard.result.CleanResult
+import com.github.stephenhamiltonc.timecard.result.ClockResult
+import com.github.stephenhamiltonc.timecard.result.UndoResult
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
-import result.*
 
 interface ITimeEntries {
     val isClockedIn: Boolean

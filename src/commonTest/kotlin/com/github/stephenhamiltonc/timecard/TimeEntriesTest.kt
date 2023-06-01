@@ -1,5 +1,7 @@
+package com.github.stephenhamiltonc.timecard
+
+import com.github.stephenhamiltonc.timecard.result.*
 import kotlinx.datetime.*
-import result.*
 import kotlin.test.*
 
 class TimeEntriesTest {

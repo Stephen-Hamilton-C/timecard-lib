@@ -1,3 +1,5 @@
+package com.github.stephenhamiltonc.timecard
+
 import kotlinx.datetime.*
 
 internal fun LocalDate.Companion.today(): LocalDate {

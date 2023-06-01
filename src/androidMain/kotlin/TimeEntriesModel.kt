@@ -2,9 +2,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.github.stephenhamiltonc.timecard.ITimeEntries
+import com.github.stephenhamiltonc.timecard.TimeEntries
+import com.github.stephenhamiltonc.timecard.TimeEntry
+import com.github.stephenhamiltonc.timecard.result.CleanResult
+import com.github.stephenhamiltonc.timecard.result.ClockResult
+import com.github.stephenhamiltonc.timecard.result.UndoResult
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
-import result.*
 
 class TimeEntriesModel : ViewModel(), ITimeEntries {
     var entries by mutableStateOf(listOf<TimeEntry>())
