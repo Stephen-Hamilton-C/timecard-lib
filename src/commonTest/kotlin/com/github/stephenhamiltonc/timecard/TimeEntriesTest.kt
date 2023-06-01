@@ -13,15 +13,15 @@ class TimeEntriesTest {
     private lateinit var timeEntries6: TimeEntries
     private lateinit var timeEntries7: TimeEntries
 
-    private val timeEntry0 = TimeEntry.from("0")
-    private val timeEntry0to60 = TimeEntry.from("0,60")
-    private val timeEntry120to300 = TimeEntry.from("120,300")
-    private val timeEntry450 = TimeEntry.from("450")
-    private val timeEntry0to120 = TimeEntry.from("0,120")
-    private val timeEntryInDay1 = TimeEntry.from("86400,86460")
-    private val timeEntryInDay2 = TimeEntry.from("172800,172860")
-    private val timeEntryInDay2NoEnd = TimeEntry.from("172800")
-    private val timeEntryAcrossTwoDays = TimeEntry.from("86400,172800")
+    private val timeEntry0 = TimeEntry.fromString("0")
+    private val timeEntry0to60 = TimeEntry.fromString("0,60")
+    private val timeEntry120to300 = TimeEntry.fromString("120,300")
+    private val timeEntry450 = TimeEntry.fromString("450")
+    private val timeEntry0to120 = TimeEntry.fromString("0,120")
+    private val timeEntryInDay1 = TimeEntry.fromString("86400,86460")
+    private val timeEntryInDay2 = TimeEntry.fromString("172800,172860")
+    private val timeEntryInDay2NoEnd = TimeEntry.fromString("172800")
+    private val timeEntryAcrossTwoDays = TimeEntry.fromString("86400,172800")
 
     // Timezones make me want to scream
     private val day0 = timeEntry0.start.toLocalDate()
@@ -114,40 +114,40 @@ class TimeEntriesTest {
 
     @Test
     fun testLoad() {
-        timeEntries1.load("0,1;2,3")
+        var timeEntries = TimeEntries.fromString("0,1;2,3")
         assertEquals(
             listOf(
-                TimeEntry.from("0,1"),
-                TimeEntry.from("2,3")
+                TimeEntry.fromString("0,1"),
+                TimeEntry.fromString("2,3")
             ),
-            timeEntries1.entries
+            timeEntries.entries
         )
 
-        timeEntries2.load("")
+        timeEntries = TimeEntries.fromString("")
         assertEquals(
             listOf(),
-            timeEntries2.entries
+            timeEntries.entries
         )
 
-        timeEntries3.load("10,50;60")
+        timeEntries = TimeEntries.fromString("10,50;60")
         assertEquals(
             listOf(
-                TimeEntry.from("10,50"),
-                TimeEntry.from("60")
+                TimeEntry.fromString("10,50"),
+                TimeEntry.fromString("60")
             ),
-            timeEntries3.entries
+            timeEntries.entries
         )
 
         assertFails {
-            timeEntries4.load("50,10;20,30")
+            TimeEntries.fromString("50,10;20,30")
         }
 
         assertFails {
-            timeEntries5.load("50,60;10,20")
+            TimeEntries.fromString("50,60;10,20")
         }
 
         assertFails {
-            timeEntries6.load("10;20,30;40")
+            TimeEntries.fromString("10;20,30;40")
         }
     }
 
@@ -203,36 +203,36 @@ class TimeEntriesTest {
 
     @Test
     fun testFilterByDateRange() {
-        assertTrue(timeEntries1.filterByDateRange(day0, day3).isEmpty())
-        assertTrue(timeEntries2.filterByDateRange(day1, day3).isEmpty())
-        assertTrue(timeEntries3.filterByDateRange(day1, day3).isEmpty())
-        assertTrue(timeEntries4.filterByDateRange(day1, day3).isEmpty())
-        assertTrue(timeEntries5.filterByDateRange(day3, day4).isEmpty())
-        assertTrue(timeEntries6.filterByDateRange(day3, day4).isEmpty())
+        assertTrue(timeEntries1.filterByDateRange(day0..day3).isEmpty())
+        assertTrue(timeEntries2.filterByDateRange(day1..day3).isEmpty())
+        assertTrue(timeEntries3.filterByDateRange(day1..day3).isEmpty())
+        assertTrue(timeEntries4.filterByDateRange(day1..day3).isEmpty())
+        assertTrue(timeEntries5.filterByDateRange(day3..day4).isEmpty())
+        assertTrue(timeEntries6.filterByDateRange(day3..day4).isEmpty())
 
         assertEquals(
             timeEntries2.entries,
-            timeEntries2.filterByDateRange(day0, day1)
+            timeEntries2.filterByDateRange(day0..day1)
         )
         assertEquals(
             timeEntries3.entries,
-            timeEntries3.filterByDateRange(day0, day2)
+            timeEntries3.filterByDateRange(day0..day2)
         )
         assertEquals(
             timeEntries4.entries,
-            timeEntries4.filterByDateRange(day0, day3)
+            timeEntries4.filterByDateRange(day0..day3)
         )
         assertEquals(
             timeEntries5.entries,
-            timeEntries5.filterByDateRange(day0, day4)
+            timeEntries5.filterByDateRange(day0..day4)
         )
         assertEquals(
             timeEntries6.entries,
-            timeEntries6.filterByDateRange(day0, day4)
+            timeEntries6.filterByDateRange(day0..day4)
         )
         assertEquals(
             timeEntries7.entries,
-            timeEntries7.filterByDateRange(day0, day4)
+            timeEntries7.filterByDateRange(day0..day4)
         )
 
         assertEquals(
@@ -240,22 +240,22 @@ class TimeEntriesTest {
                 timeEntry0to120,
                 timeEntryInDay1
             ),
-            timeEntries5.filterByDateRange(day0, day1)
+            timeEntries5.filterByDateRange(day0..day1)
         )
         assertEquals(
             listOf(
                 timeEntryInDay1,
                 timeEntryInDay2
             ),
-            timeEntries6.filterByDateRange(day1, day2)
+            timeEntries6.filterByDateRange(day1..day2)
         )
         assertEquals(
             listOf(timeEntryAcrossTwoDays),
-            timeEntries7.filterByDateRange(day1, day2)
+            timeEntries7.filterByDateRange(day1..day2)
         )
         assertEquals(
             listOf(timeEntryAcrossTwoDays),
-            timeEntries7.filterByDateRange(day2, day3)
+            timeEntries7.filterByDateRange(day2..day3)
         )
     }
 
@@ -289,6 +289,9 @@ class TimeEntriesTest {
         )
 
         assertEquals(CleanResult.NO_OP, timeEntries7.clean(day2))
+
+        val futureDay = LocalDate.today().plus(1, DateTimeUnit.DAY)
+        assertEquals(CleanResult.DATE_IN_FUTURE, timeEntries1.clean(futureDay))
     }
 
     @Test
@@ -362,15 +365,6 @@ class TimeEntriesTest {
             ),
             timeEntries5.entries
         )
-    }
-
-    private fun minutesSince(epochSeconds: Long): Long {
-        return minutesSince(Instant.fromEpochSeconds(epochSeconds))
-    }
-
-    private fun minutesSince(instant: Instant): Long {
-        val now = Clock.System.now()
-        return (now - instant).inWholeMinutes
     }
 
     @Test
