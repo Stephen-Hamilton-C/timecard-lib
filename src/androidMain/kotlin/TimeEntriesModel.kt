@@ -20,10 +20,14 @@ class TimeEntriesModel : ViewModel(), ITimeEntries {
     override val isClockedOut: Boolean
         get() = !isClockedIn
 
-    private val _timeEntries = TimeEntries()
+    private var _timeEntries = TimeEntries()
 
-    override fun load(data: String) {
-        _timeEntries.load(data)
+    /**
+     * Clears the current entries and loads a new TimeEntries from the given data
+     * @param data Serialized TimeEntries data
+     */
+    fun load(data: String) {
+        _timeEntries = TimeEntries.fromString(data)
         entries = _timeEntries.entries
     }
 
@@ -35,12 +39,21 @@ class TimeEntriesModel : ViewModel(), ITimeEntries {
         return _timeEntries.filterByDay(date)
     }
 
-    override fun filterByDateRange(fromDate: LocalDate, toDate: LocalDate): List<TimeEntry> {
-        return _timeEntries.filterByDateRange(fromDate, toDate)
+    override fun filterByDateRange(fromDate: LocalDate): List<TimeEntry> {
+        return _timeEntries.filterByDateRange(fromDate)
+    }
+
+    override fun filterByDateRange(dateRange: ClosedRange<LocalDate>): List<TimeEntry> {
+        return _timeEntries.filterByDateRange(dateRange)
     }
 
     override fun clean(pastDate: LocalDate): CleanResult {
         return _timeEntries.clean(pastDate)
+    }
+
+    override fun clear() {
+        _timeEntries.clear()
+        entries = _timeEntries.entries
     }
 
     override fun clockIn(time: Instant): ClockResult {

@@ -4,15 +4,23 @@ import com.github.stephenhamiltonc.timecard.result.CleanResult
 import com.github.stephenhamiltonc.timecard.result.ClockResult
 import com.github.stephenhamiltonc.timecard.result.UndoResult
 import kotlinx.datetime.*
+import kotlin.jvm.JvmStatic
 
+/**
+ * Contains and manages instances of TimeEntry
+ */
 class TimeEntries(
     private val _entries: MutableList<TimeEntry> = mutableListOf()
 ) : ITimeEntries {
+    /**
+     * All the TimeEntry instances that have been logged.
+     */
     val entries: List<TimeEntry>
         get() = _entries
 
     override val isClockedIn: Boolean
         get() = entries.isNotEmpty() && entries.lastOrNull()?.end == null
+
     override val isClockedOut: Boolean
         get() = !isClockedIn
 
@@ -20,6 +28,9 @@ class TimeEntries(
         validateEntries()
     }
 
+    /**
+     * Verifies that each TimeEntry is chronological
+     */
     private fun validateEntries() {
         var previousInstant = Instant.fromEpochSeconds(0)
         for(entry in _entries) {
@@ -38,41 +49,56 @@ class TimeEntries(
         }
     }
 
-    override fun load(data: String) {
-        _entries.clear()
+    companion object {
+        /**
+         * Creates a TimeEntries from the given data
+         * Format is "start,end;start"
+         * This format can be retrieved with TimeEntries.toString()
+         * @param data The data to load the TimeEntries from
+         */
+        @JvmStatic
+        fun fromString(data: String): TimeEntries {
+            val newEntries = mutableListOf<TimeEntry>()
+            val entriesData = data.split(";")
+            for (entryData in entriesData) {
+                if (entryData.isEmpty()) continue
 
-        val entriesData = data.split(";")
-        for(entryData in entriesData) {
-            if(entryData.isEmpty()) continue
+                val entry = TimeEntry.fromString(entryData)
+                newEntries.add(entry)
+            }
 
-            val entry = TimeEntry.from(entryData)
-            _entries.add(entry)
+            return TimeEntries(newEntries)
         }
-
-        validateEntries()
     }
+
     override fun toString(): String = _entries.joinToString(";")
 
     override fun filterByDay(date: LocalDate): List<TimeEntry> {
-        return filterByDateRange(date, date)
+        return filterByDateRange(date..date)
     }
 
-    override fun filterByDateRange(fromDate: LocalDate, toDate: LocalDate): List<TimeEntry> {
+    override fun filterByDateRange(fromDate: LocalDate): List<TimeEntry> {
+        return filterByDateRange(fromDate..LocalDate.today())
+    }
+
+    override fun filterByDateRange(dateRange: ClosedRange<LocalDate>): List<TimeEntry> {
         return _entries.filter {
             val startDate = it.start.toLocalDate()
             val endDate = it.end?.toLocalDate()
-            val startDateInRange = startDate in fromDate..toDate
+            val startDateInRange = startDate in dateRange
             it.start.toLocalDate()
 
             return@filter if(endDate == null) {
                 startDateInRange
             } else {
-                startDateInRange || (endDate in fromDate..toDate)
+                startDateInRange || (endDate in dateRange)
             }
         }
     }
 
     override fun clean(pastDate: LocalDate): CleanResult {
+        if(pastDate > LocalDate.today()) return CleanResult.DATE_IN_FUTURE
+
         val cleanedEntries = filterByDateRange(pastDate)
         if(_entries.size == cleanedEntries.size) return CleanResult.NO_OP
 
@@ -80,6 +106,10 @@ class TimeEntries(
             !cleanedEntries.contains(it)
         }
         return CleanResult.SUCCESS
+    }
+
+    override fun clear() {
+        _entries.clear()
     }
 
     private fun timeIsFuture(time: Instant): Boolean {
@@ -132,10 +162,30 @@ class TimeEntries(
         return UndoResult.SUCCESS
     }
 
+    /**
+     * Gets the last time used for work/break calculations
+     * @param time The time that may exist
+     * @param previousTime The time before the time that may exist
+     */
+    private fun getLastTime(time: Instant?, previousTime: Instant): Instant? {
+        if(time == null) {
+            val now = Clock.System.now()
+            return if(now.toLocalDate() == previousTime.toLocalDate()) {
+                // These are the same day, use NOW for calculation
+                now
+            } else {
+                // Not on the same day, likely looking at history
+                null
+            }
+        }
+
+        return time
+    }
+
     override fun calculateMinutesWorked(date: LocalDate): Long {
         var totalMinutes = 0L
         for(entry in filterByDay(date)) {
-            val endTime = entry.end ?: Clock.System.now()
+            val endTime = getLastTime(entry.end, entry.start) ?: continue
             val duration = endTime - entry.start
             totalMinutes += duration.inWholeMinutes
         }
@@ -150,19 +200,7 @@ class TimeEntries(
             val nextEntry = entriesForDate.getOrNull(i + 1)
 
             if(currentEntry.end != null) {
-                var nextStartTime = nextEntry?.start
-                if(nextStartTime == null) {
-                    // Check if NOW is the same day as the last entry
-                    val now = Clock.System.now()
-                    if(now.toLocalDate() == currentEntry.end.toLocalDate()) {
-                        // Same day, count minutes to now as break
-                        nextStartTime = now
-                    } else {
-                        // Not the same day, likely looking at history
-                        continue
-                    }
-                }
-
+                val nextStartTime = getLastTime(nextEntry?.start, currentEntry.end) ?: continue
                 val duration = nextStartTime - currentEntry.end
                 totalMinutes += duration.inWholeMinutes
             }
