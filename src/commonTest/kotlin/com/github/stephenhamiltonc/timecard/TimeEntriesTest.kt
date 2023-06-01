@@ -383,16 +383,13 @@ class TimeEntriesTest {
         assertEquals(0L, timeEntries6.calculateMinutesWorked(day3))
         assertEquals(0L, timeEntries7.calculateMinutesWorked(day3))
 
-        assertEquals(minutesSince(0), timeEntries2.calculateMinutesWorked(day0))
+        assertEquals(0, timeEntries2.calculateMinutesWorked(day0))
         assertEquals(4L, timeEntries3.calculateMinutesWorked(day0))
-        assertEquals(
-            4L + minutesSince(450L),
-            timeEntries4.calculateMinutesWorked(day0)
-        )
+        assertEquals(4L, timeEntries4.calculateMinutesWorked(day0))
 
         assertEquals(2L, timeEntries5.calculateMinutesWorked(day0))
         assertEquals(1L, timeEntries5.calculateMinutesWorked(day1))
-        assertEquals(minutesSince(timeEntryInDay2NoEnd.start), timeEntries5.calculateMinutesWorked(day2))
+        assertEquals(0L, timeEntries5.calculateMinutesWorked(day2))
 
         assertEquals(2L, timeEntries6.calculateMinutesWorked(day0))
         assertEquals(1L, timeEntries6.calculateMinutesWorked(day1))
