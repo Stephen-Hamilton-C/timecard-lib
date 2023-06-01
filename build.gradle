@@ -28,7 +28,8 @@ kotlin {
             }
             testTask {
                 useKarma {
-                    useFirefox()
+                    useChromeHeadless()
+                    useFirefoxHeadless()
                 }
             }
             generateTypeScriptDefinitions()
