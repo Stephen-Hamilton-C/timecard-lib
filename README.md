@@ -1,7 +1,7 @@
 # timecard-lib
 The backend used in [timecard-cli](https://github.com/Stephen-Hamilton-C/timecard-cli),
 [timecard-web](https://github.com/Stephen-Hamilton-C/timecard-web), and
-[timecard-app](https://github.com/Stephen-Hamilton-C/timecard-app)
+[timecard-compose](https://github.com/Stephen-Hamilton-C/timecard-compose)
 
 I need the same application on different platforms,
 and I have been wanting to mess around with Kotlin Multiplatform,
