@@ -419,7 +419,7 @@ class TimeEntriesTest {
         assertEquals(0, timeEntries1.calculateMinutesOnBreak(day0))
         assertEquals(0, timeEntries2.calculateMinutesOnBreak(day0))
         assertEquals(1, timeEntries3.calculateMinutesOnBreak(day0))
-        assertEquals(4, timeEntries4.calculateMinutesOnBreak(day0))
+        assertEquals(3, timeEntries4.calculateMinutesOnBreak(day0))
         assertEquals(0, timeEntries5.calculateMinutesOnBreak(day0))
         assertEquals(0, timeEntries5.calculateMinutesOnBreak(day1))
         assertEquals(0, timeEntries6.calculateMinutesOnBreak(day0))
@@ -435,46 +435,50 @@ class TimeEntriesTest {
         val eightHrsInMin = 8L * 60L
         val eightHrsInSec = eightHrsInMin * 60L
         val now = Clock.System.now()
-        assertNull(timeEntries1.calculateExpectedEndTime(eightHrsInMin))
+        assertNull(timeEntries1.calculateExpectedEndTime(eightHrsInMin, day0))
         assertEquals(
-            Instant.fromEpochSeconds(eightHrsInSec).epochSeconds,
-            timeEntries2.calculateExpectedEndTime(eightHrsInMin, day0).epochSeconds
-        )
-        assertEquals(
-            Instant.fromEpochSeconds(eightHrsInSec + 4 * 60).epochSeconds,
-            timeEntries3.calculateExpectedEndTime(eightHrsInMin, day0).epochSeconds
-        )
-        assertEquals(
-            Instant.fromEpochSeconds(eightHrsInSec + 4 * 60).epochSeconds,
-            timeEntries4.calculateExpectedEndTime(eightHrsInMin, day0).epochSeconds
+            now.plus(eightHrsInMin, DateTimeUnit.MINUTE).epochSeconds,
+            timeEntries1.calculateExpectedEndTime(eightHrsInMin)?.epochSeconds
         )
         assertEquals(
             Instant.fromEpochSeconds(eightHrsInSec).epochSeconds,
-            timeEntries5.calculateExpectedEndTime(eightHrsInMin, day0).epochSeconds
+            timeEntries2.calculateExpectedEndTime(eightHrsInMin, day0)?.epochSeconds
+        )
+        assertEquals(
+            Instant.fromEpochSeconds(eightHrsInSec + 60).epochSeconds,
+            timeEntries3.calculateExpectedEndTime(eightHrsInMin, day0)?.epochSeconds
+        )
+        assertEquals(
+            Instant.fromEpochSeconds(eightHrsInSec + 3 * 60).epochSeconds,
+            timeEntries4.calculateExpectedEndTime(eightHrsInMin, day0)?.epochSeconds
+        )
+        assertEquals(
+            Instant.fromEpochSeconds(eightHrsInSec).epochSeconds,
+            timeEntries5.calculateExpectedEndTime(eightHrsInMin, day0)?.epochSeconds
         )
         assertEquals(
             timeEntryInDay1.start.plus(eightHrsInMin, DateTimeUnit.MINUTE).epochSeconds,
-            timeEntries5.calculateExpectedEndTime(eightHrsInMin, day1).epochSeconds
+            timeEntries5.calculateExpectedEndTime(eightHrsInMin, day1)?.epochSeconds
         )
         assertEquals(
             timeEntryInDay2NoEnd.start.plus(eightHrsInMin, DateTimeUnit.MINUTE).epochSeconds,
-            timeEntries5.calculateExpectedEndTime(eightHrsInMin, day2).epochSeconds
+            timeEntries5.calculateExpectedEndTime(eightHrsInMin, day2)?.epochSeconds
         )
         assertEquals(
-            timeEntryInDay2.plus(eightHrsInMin, DateTimeUnit.MINUTE).epochSeconds,
-            timeEntries6.calculateExpectedEndTime(eightHrsInMin, day1).epochSeconds
+            timeEntryInDay1.start.plus(eightHrsInMin, DateTimeUnit.MINUTE).epochSeconds,
+            timeEntries6.calculateExpectedEndTime(eightHrsInMin, day1)?.epochSeconds
         )
         assertEquals(
-            Instant.fromEpochSeconds(eightHrsInSec + 4 * 60).epochSeconds,
-            timeEntries7.calculateExpectedEndTime(eightHrsInMin, day0).epochSeconds
+            Instant.fromEpochSeconds(eightHrsInSec + 60).epochSeconds,
+            timeEntries7.calculateExpectedEndTime(eightHrsInMin, day0)?.epochSeconds
         )
         assertEquals(
-            timeEntryAcrossTwoDays.plus(eightHrsInMin, DateTimeUnit.MINUTE).epochSeconds,
-            timeEntries7.calculateExpectedEndTime(eightHrsInMin, day1).epochSeconds
+            timeEntryAcrossTwoDays.start.plus(eightHrsInMin, DateTimeUnit.MINUTE).epochSeconds,
+            timeEntries7.calculateExpectedEndTime(eightHrsInMin, day1)?.epochSeconds
         )
         assertEquals(
-            timeEntryAcrossTwoDays.plus(eightHrsInMin, DateTimeUnit.MINUTE).epochSeconds,
-            timeEntries7.calculateExpectedEndTime(eightHrsInMin, day2).epochSeconds
+            timeEntryAcrossTwoDays.start.plus(eightHrsInMin, DateTimeUnit.MINUTE).epochSeconds,
+            timeEntries7.calculateExpectedEndTime(eightHrsInMin, day2)?.epochSeconds
         )
     }
 }
