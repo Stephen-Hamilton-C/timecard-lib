@@ -1,5 +1,5 @@
 name: Gradle Build
-run-name: ${{ github.actor }} is running a build
+run-name: ${{ github.actor }} pushed a new commit
 on: [push, pull_request]
 permissions:
   contents: read
