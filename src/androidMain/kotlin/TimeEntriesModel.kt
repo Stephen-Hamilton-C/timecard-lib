@@ -63,7 +63,7 @@ class TimeEntriesModel : ViewModel(), ITimeEntries {
         return _timeEntries.calculateMinutesOnBreak(date)
     }
 
-    override fun calculateExpectedEndTime(minutesToWork: Long, date: LocalDate): Instant {
+    override fun calculateExpectedEndTime(minutesToWork: Long, date: LocalDate): Instant? {
         return _timeEntries.calculateExpectedEndTime(minutesToWork, date)
     }
 }

@@ -145,12 +145,13 @@ class TimeEntries(
             val nextEntry = entriesForDate.getOrNull(i + 1)
 
             if(currentEntry.end != null) {
-                val nextStartTime = nextEntry?.start ?: {
+                var nextStartTime = nextEntry?.start
+                if(nextStartTime == null) {
                     // Check if NOW is the same day as the last entry
                     val now = Clock.System.now()
                     if(now.toLocalDate() == currentEntry.end.toLocalDate()) {
                         // Same day, count minutes to now as break
-                        now
+                        nextStartTime = now
                     } else {
                         // Not the same day, likely looking at history
                         continue
@@ -169,7 +170,7 @@ class TimeEntries(
         val minutesOnBreak = calculateMinutesOnBreak(date)
 
         val entriesForDate = filterByDay(date)
-        if(entriesForDate.isEmpty() && date.toLocalDate() != LocalDate.today()) return null
+        if(entriesForDate.isEmpty() && date != LocalDate.today()) return null
 
         val startTime = entriesForDate.firstOrNull()?.start ?: Clock.System.now()
         return startTime.plus(minutesToWork + minutesOnBreak, DateTimeUnit.MINUTE)
