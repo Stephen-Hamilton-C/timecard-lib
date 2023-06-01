@@ -1,4 +1,5 @@
 import kotlinx.datetime.*
+import result.*
 
 class TimeEntries(
     private val _entries: MutableList<TimeEntry> = mutableListOf()

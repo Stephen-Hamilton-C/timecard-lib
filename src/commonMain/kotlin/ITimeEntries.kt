@@ -1,6 +1,7 @@
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
+import result.*
 
 interface ITimeEntries {
     val isClockedIn: Boolean

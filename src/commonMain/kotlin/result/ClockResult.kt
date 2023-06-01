@@ -1,3 +1,5 @@
+package result
+
 enum class ClockResult {
     SUCCESS,
     NO_OP,

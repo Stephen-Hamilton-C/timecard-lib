@@ -1,4 +1,5 @@
 import kotlinx.datetime.*
+import result.*
 import kotlin.test.*
 
 class TimeEntriesTest {

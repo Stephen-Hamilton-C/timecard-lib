@@ -4,6 +4,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
+import result.*
 
 class TimeEntriesModel : ViewModel(), ITimeEntries {
     var entries by mutableStateOf(listOf<TimeEntry>())
