@@ -1,0 +1,23 @@
+name: Create Release on Tag
+run-name: ${{ github.actor }} pushed a new release tag
+
+on: 
+  push:
+    tags:
+    - 'v*.*.*'
+
+jobs:
+  create-release:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+    - name: Trigger Gradle Build workflow
+      uses: convictional/trigger-workflow-and-wait@v1
+      with:
+        workflow_file_name: gradle-build.yml
+    - uses: actions/checkout@v3
+    - name: Create Release
+      uses: ncipollo/release-action@v1
+      with:
+        bodyFile: "RELEASE.md"
