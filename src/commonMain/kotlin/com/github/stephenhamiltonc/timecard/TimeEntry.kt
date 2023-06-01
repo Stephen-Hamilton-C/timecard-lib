@@ -11,7 +11,7 @@ data class TimeEntry(val start: Instant, val end: Instant? = null) {
 
     companion object {
         @JvmStatic
-        fun from(data: String): TimeEntry {
+        fun fromString(data: String): TimeEntry {
             val dataSplit = data.split(",")
             val start = Instant.fromEpochSeconds(dataSplit[0].toLong())
             val end = if(dataSplit.size > 1) {

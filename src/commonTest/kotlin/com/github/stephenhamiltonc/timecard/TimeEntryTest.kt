@@ -57,13 +57,13 @@ class TimeEntryTest {
 
     @Test
     fun testFrom() {
-        assertEquals(timeEntry1, TimeEntry.from("0,123456"))
-        assertEquals(timeEntry2, TimeEntry.from("123457,987654321"))
-        assertEquals(timeEntry3, TimeEntry.from("0,987654321"))
-        assertEquals(timeEntry4, TimeEntry.from("0,987654321"))
-        assertEquals(timeEntry5, TimeEntry.from("0"))
+        assertEquals(timeEntry1, TimeEntry.fromString("0,123456"))
+        assertEquals(timeEntry2, TimeEntry.fromString("123457,987654321"))
+        assertEquals(timeEntry3, TimeEntry.fromString("0,987654321"))
+        assertEquals(timeEntry4, TimeEntry.fromString("0,987654321"))
+        assertEquals(timeEntry5, TimeEntry.fromString("0"))
         assertFailsWith<IllegalStateException> {
-            TimeEntry.from("50,10")
+            TimeEntry.fromString("50,10")
         }
     }
 
