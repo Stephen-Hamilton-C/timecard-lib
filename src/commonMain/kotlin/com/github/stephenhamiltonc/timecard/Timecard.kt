@@ -4,34 +4,30 @@ import com.github.stephenhamiltonc.timecard.result.CleanResult
 import com.github.stephenhamiltonc.timecard.result.ClockResult
 import com.github.stephenhamiltonc.timecard.result.UndoResult
 import kotlinx.datetime.*
+import kotlinx.serialization.Serializable
 import kotlin.jvm.JvmStatic
 
 /**
  * Contains and manages instances of TimeEntry
  */
-class TimeEntries(
+@Serializable
+class Timecard(
     private val _entries: MutableList<TimeEntry> = mutableListOf()
-) : ITimeEntries {
+) {
     /**
      * All the TimeEntry instances that have been logged.
      */
     val entries: List<TimeEntry>
         get() = _entries
 
-    override val isClockedIn: Boolean
+    val isClockedIn: Boolean
         get() = entries.isNotEmpty() && entries.lastOrNull()?.end == null
 
-    override val isClockedOut: Boolean
+    val isClockedOut: Boolean
         get() = !isClockedIn
 
     init {
-        validateEntries()
-    }
-
-    /**
-     * Verifies that each TimeEntry is chronological
-     */
-    private fun validateEntries() {
+        // Verify that each TimeEntry is chronological
         var previousInstant = Instant.fromEpochSeconds(0)
         for(entry in _entries) {
             val isLastEntry = entry == _entries.last()
@@ -39,7 +35,7 @@ class TimeEntries(
                 throw IllegalStateException("Only the last TimeEntry may have an end time of null!")
 
             if(entry.start < previousInstant)
-                throw IllegalStateException("TimeEntries must be stored in chronological order!")
+                throw IllegalStateException("Timecard must be stored in chronological order!")
 
             // Don't need to check if start and end of the same TimeEntry are logical
             // since that is done by TimeEntry during construction
@@ -51,15 +47,15 @@ class TimeEntries(
 
     companion object {
         /**
-         * Creates a TimeEntries from the given data
-         * Format is "start,end;start"
-         * This format can be retrieved with TimeEntries.toString()
-         * @param data The data to load the TimeEntries from
+         * Creates a Timecard from the given data
+         * Format is "start,end\nstart"
+         * This format can be retrieved with Timecard.toString()
+         * @param data The data to load the Timecard from
          */
         @JvmStatic
-        fun fromString(data: String): TimeEntries {
+        fun fromString(data: String): Timecard {
             val newEntries = mutableListOf<TimeEntry>()
-            val entriesData = data.split(";")
+            val entriesData = data.split("\n")
             for (entryData in entriesData) {
                 if (entryData.isEmpty()) continue
 
@@ -67,21 +63,40 @@ class TimeEntries(
                 newEntries.add(entry)
             }
 
-            return TimeEntries(newEntries)
+            return Timecard(newEntries)
         }
     }
 
-    override fun toString(): String = _entries.joinToString(";")
+    /**
+     * Serializes this Timecard into a String
+     * Format: "start,end\nstart"
+     * @return The Timecard as a serialized String
+     */
+    override fun toString(): String = _entries.joinToString("\n")
 
-    override fun filterByDay(date: LocalDate): List<TimeEntry> {
+    /**
+     * Gets a list of entries that are within the given date
+     * @param date The day to filter by. Defaults to today.
+     */
+    fun filterByDay(date: LocalDate = LocalDate.today()): List<TimeEntry> {
         return filterByDateRange(date..date)
     }
 
-    override fun filterByDateRange(fromDate: LocalDate): List<TimeEntry> {
+    /**
+     * Gets a list of entries from the date given to today
+     * @param fromDate The date to start at
+     * @return A list of entries from the given date to today
+     */
+    fun filterByDateRange(fromDate: LocalDate): List<TimeEntry> {
         return filterByDateRange(fromDate..LocalDate.today())
     }
 
-    override fun filterByDateRange(dateRange: ClosedRange<LocalDate>): List<TimeEntry> {
+    /**
+     * Gets any entries that are within the date range
+     * @param dateRange The range of dates to check
+     * @return A list of entries that are within the range
+     */
+    fun filterByDateRange(dateRange: ClosedRange<LocalDate>): List<TimeEntry> {
         return _entries.filter {
             val startDate = it.start.toLocalDate()
             val endDate = it.end?.toLocalDate()
@@ -96,7 +111,15 @@ class TimeEntries(
         }
     }
 
-    override fun clean(pastDate: LocalDate): CleanResult {
+    /**
+     * Removes any entries older than the given date
+     * @param pastDate The oldest day of entries to keep
+     * @return
+     * - DATE_IN_FUTURE if the given date is in the future
+     * - NO_OP if there is nothing to clean
+     * - SUCCESS if clean finished
+     */
+    fun clean(pastDate: LocalDate = LocalDate.today()): CleanResult {
         if(pastDate > LocalDate.today()) return CleanResult.DATE_IN_FUTURE
 
         val cleanedEntries = filterByDateRange(pastDate)
@@ -108,7 +131,10 @@ class TimeEntries(
         return CleanResult.SUCCESS
     }
 
-    override fun clear() {
+    /**
+     * Removes all entries
+     */
+    fun clear() {
         _entries.clear()
     }
 
@@ -117,7 +143,16 @@ class TimeEntries(
         return now < time
     }
 
-    override fun clockIn(time: Instant): ClockResult {
+    /**
+     * Attempts to log a clock in
+     * @param time The time to clock in. Defaults to NOW
+     * @return
+     * - NO_OP if already clocked in
+     * - TIME_IN_FUTURE if the provided time is in the future
+     * - TIME_TOO_EARLY if the provided time is before the last clock out time
+     * - SUCCESS if clocking in finished
+     */
+    fun clockIn(time: Instant = Clock.System.now()): ClockResult {
         if(isClockedIn) return ClockResult.NO_OP
         if(timeIsFuture(time)) return ClockResult.TIME_IN_FUTURE
         
@@ -133,7 +168,16 @@ class TimeEntries(
         return ClockResult.SUCCESS
     }
 
-    override fun clockOut(time: Instant): ClockResult {
+    /**
+     * Attempts to log a clock out
+     * @param time The time to clock out. Defaults to NOW
+     * @return
+     * - NO_OP if already clocked out
+     * - TIME_IN_FUTURE if the provided time is in the future
+     * - TIME_TOO_EARLY if the provided time is before the last clock in time
+     * - SUCCESS if clocking out finished
+     */
+    fun clockOut(time: Instant = Clock.System.now()): ClockResult {
         if(isClockedOut) return ClockResult.NO_OP
         if(timeIsFuture(time)) return ClockResult.TIME_IN_FUTURE
 
@@ -148,7 +192,13 @@ class TimeEntries(
         return ClockResult.SUCCESS
     }
 
-    override fun undo(): UndoResult {
+    /**
+     * Attempts to remove the last time log
+     * @return
+     * - NO_OP if there are no time logs to remove
+     * - SUCCESS if undo finished
+     */
+    fun undo(): UndoResult {
         if(_entries.isEmpty()) return UndoResult.NO_OP
 
         if(isClockedIn) {
@@ -182,7 +232,14 @@ class TimeEntries(
         return time
     }
 
-    override fun calculateMinutesWorked(date: LocalDate): Long {
+    /**
+     * Calculates how many minutes the user has worked so far.
+     * If clocked in, this includes minutes since last clocked in,
+     * if the given date is TODAY
+     * @param date The day to run this calculation on. Defaults to TODAY
+     * @return The number of minutes that have been logged as work
+     */
+    fun calculateMinutesWorked(date: LocalDate = LocalDate.today()): Long {
         var totalMinutes = 0L
         for(entry in filterByDay(date)) {
             val endTime = getLastTime(entry.end, entry.start) ?: continue
@@ -193,7 +250,14 @@ class TimeEntries(
         return totalMinutes
     }
 
-    override fun calculateMinutesOnBreak(date: LocalDate): Long {
+    /**
+     * Calculates how many minutes the user has not worked so far.
+     * If clocked out, this includes minutes since last clocked out,
+     * if the given date is TODAY
+     * @param date The day to run this calculation on. Defaults to TODAY
+     * @return The number of minutes that have been logged as on break
+     */
+    fun calculateMinutesOnBreak(date: LocalDate = LocalDate.today()): Long {
         var totalMinutes = 0L
         val entriesForDate = filterByDay(date)
         for((i, currentEntry) in entriesForDate.withIndex()) {
@@ -209,7 +273,14 @@ class TimeEntries(
         return totalMinutes
     }
 
-    override fun calculateExpectedEndTime(minutesToWork: Long, date: LocalDate): Instant? {
+    /**
+     * Calculates when the worked time will reach the number of minutes given
+     * @param minutesToWork How many minutes to expect a full work day to be
+     * @param date The day to run this calculation on. Defaults to TODAY
+     * @return An Instant determining when worked minutes reaches minutesToWork.
+     * Returns null if the given date is not today and there are no entries for that day.
+     */
+    fun calculateExpectedEndTime(minutesToWork: Long, date: LocalDate = LocalDate.today()): Instant? {
         val minutesOnBreak = calculateMinutesOnBreak(date)
 
         val entriesForDate = filterByDay(date)

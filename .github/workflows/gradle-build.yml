@@ -1,6 +1,6 @@
 name: Gradle Build
 run-name: ${{ github.actor }} is running a build
-on: [push, pull_request]
+on: [push]
 permissions:
   contents: read
 
