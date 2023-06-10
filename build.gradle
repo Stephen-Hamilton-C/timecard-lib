@@ -1,10 +1,14 @@
 plugins {
     id 'org.jetbrains.kotlin.multiplatform' version '1.8.21'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.21'
     id 'maven-publish'
 }
 
+apply plugin: 'kotlin-multiplatform'
+apply plugin: 'kotlinx-serialization'
+
 group = 'com.github.stephenhamiltonc'
-version = '1.0.0'
+version = '2.0.0'
 
 repositories {
     google()
@@ -46,7 +50,8 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+                implementation "org.jetbrains.kotlinx:kotlinx-datetime:0.4.0"
+                implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1"
             }
         }
         commonTest {

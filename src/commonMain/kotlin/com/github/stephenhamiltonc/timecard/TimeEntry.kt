@@ -1,8 +1,10 @@
 package com.github.stephenhamiltonc.timecard
 
 import kotlinx.datetime.Instant
+import kotlinx.serialization.Serializable
 import kotlin.jvm.JvmStatic
 
+@Serializable
 data class TimeEntry(val start: Instant, val end: Instant? = null) {
     init {
         if(end != null && start > end)
@@ -13,9 +15,9 @@ data class TimeEntry(val start: Instant, val end: Instant? = null) {
         @JvmStatic
         fun fromString(data: String): TimeEntry {
             val dataSplit = data.split(",")
-            val start = Instant.fromEpochSeconds(dataSplit[0].toLong())
+            val start = Instant.fromEpochMilliseconds(dataSplit[0].toLong())
             val end = if(dataSplit.size > 1) {
-                Instant.fromEpochSeconds(dataSplit[1].toLong())
+                Instant.fromEpochMilliseconds(dataSplit[1].toLong())
             } else null
 
             return TimeEntry(start, end)
@@ -24,9 +26,9 @@ data class TimeEntry(val start: Instant, val end: Instant? = null) {
 
     override fun toString(): String {
         return if(end == null) {
-            start.epochSeconds.toString()
+            start.toEpochMilliseconds().toString()
         } else {
-            "${start.epochSeconds},${end.epochSeconds}"
+            "${start.toEpochMilliseconds()},${end.toEpochMilliseconds()}"
         }
     }
 }
