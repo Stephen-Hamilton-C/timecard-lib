@@ -21,10 +21,10 @@ class TimeEntryTest {
 
     @BeforeTest
     fun beforeEach() {
-        instant1 = Instant.fromEpochSeconds(0L)
-        instant2 = Instant.fromEpochSeconds(123456L)
-        instant3 = Instant.fromEpochSeconds(123457L)
-        instant4 = Instant.fromEpochSeconds(987654321L)
+        instant1 = Instant.fromEpochMilliseconds(0L)
+        instant2 = Instant.fromEpochMilliseconds(123456000L)
+        instant3 = Instant.fromEpochMilliseconds(123457000L)
+        instant4 = Instant.fromEpochMilliseconds(987654321000L)
 
         timeEntry1 = TimeEntry(instant1, instant2)
         timeEntry2 = TimeEntry(instant3, instant4)
@@ -57,10 +57,10 @@ class TimeEntryTest {
 
     @Test
     fun testFrom() {
-        assertEquals(timeEntry1, TimeEntry.fromString("0,123456"))
-        assertEquals(timeEntry2, TimeEntry.fromString("123457,987654321"))
-        assertEquals(timeEntry3, TimeEntry.fromString("0,987654321"))
-        assertEquals(timeEntry4, TimeEntry.fromString("0,987654321"))
+        assertEquals(timeEntry1, TimeEntry.fromString("0,123456000"))
+        assertEquals(timeEntry2, TimeEntry.fromString("123457000,987654321000"))
+        assertEquals(timeEntry3, TimeEntry.fromString("0,987654321000"))
+        assertEquals(timeEntry4, TimeEntry.fromString("0,987654321000"))
         assertEquals(timeEntry5, TimeEntry.fromString("0"))
         assertFailsWith<IllegalStateException> {
             TimeEntry.fromString("50,10")
@@ -69,10 +69,10 @@ class TimeEntryTest {
 
     @Test
     fun testToString() {
-        assertEquals("0,123456", timeEntry1.toString())
-        assertEquals("123457,987654321", timeEntry2.toString())
-        assertEquals("0,987654321", timeEntry3.toString())
-        assertEquals("0,987654321", timeEntry4.toString())
+        assertEquals("0,123456000", timeEntry1.toString())
+        assertEquals("123457000,987654321000", timeEntry2.toString())
+        assertEquals("0,987654321000", timeEntry3.toString())
+        assertEquals("0,987654321000", timeEntry4.toString())
         assertEquals("0", timeEntry5.toString())
     }
 

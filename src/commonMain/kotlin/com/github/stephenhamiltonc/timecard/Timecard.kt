@@ -27,13 +27,7 @@ class Timecard(
         get() = !isClockedIn
 
     init {
-        validateEntries()
-    }
-
-    /**
-     * Verifies that each TimeEntry is chronological
-     */
-    private fun validateEntries() {
+        // Verify that each TimeEntry is chronological
         var previousInstant = Instant.fromEpochSeconds(0)
         for(entry in _entries) {
             val isLastEntry = entry == _entries.last()
@@ -41,7 +35,7 @@ class Timecard(
                 throw IllegalStateException("Only the last TimeEntry may have an end time of null!")
 
             if(entry.start < previousInstant)
-                throw IllegalStateException("TimeEntries must be stored in chronological order!")
+                throw IllegalStateException("Timecard must be stored in chronological order!")
 
             // Don't need to check if start and end of the same TimeEntry are logical
             // since that is done by TimeEntry during construction
@@ -53,10 +47,10 @@ class Timecard(
 
     companion object {
         /**
-         * Creates a TimeEntries from the given data
+         * Creates a Timecard from the given data
          * Format is "start,end\nstart"
-         * This format can be retrieved with TimeEntries.toString()
-         * @param data The data to load the TimeEntries from
+         * This format can be retrieved with Timecard.toString()
+         * @param data The data to load the Timecard from
          */
         @JvmStatic
         fun fromString(data: String): Timecard {
