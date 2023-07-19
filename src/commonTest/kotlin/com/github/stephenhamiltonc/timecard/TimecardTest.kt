@@ -431,47 +431,47 @@ class TimecardTest {
         val now = Clock.System.now()
         assertNull(timecard1.calculateExpectedEndTime(eightHrsInMin, day0))
         assertEquals(
-            now.plus(eightHrsInMin, DateTimeUnit.MINUTE).epochSeconds,
+            now.plus(eightHrsInMin + 1, DateTimeUnit.MINUTE).epochSeconds,
             timecard1.calculateExpectedEndTime(eightHrsInMin)?.epochSeconds
         )
         assertEquals(
-            Instant.fromEpochSeconds(eightHrsInSec).epochSeconds,
+            Instant.fromEpochSeconds(eightHrsInSec + 60).epochSeconds,
             timecard2.calculateExpectedEndTime(eightHrsInMin, day0)?.epochSeconds
         )
         assertEquals(
-            Instant.fromEpochSeconds(eightHrsInSec + 60).epochSeconds,
+            Instant.fromEpochSeconds(eightHrsInSec + 2 * 60).epochSeconds,
             timecard3.calculateExpectedEndTime(eightHrsInMin, day0)?.epochSeconds
         )
         assertEquals(
-            Instant.fromEpochSeconds(eightHrsInSec + 3 * 60).epochSeconds,
+            Instant.fromEpochSeconds(eightHrsInSec + 4 * 60).epochSeconds,
             timecard4.calculateExpectedEndTime(eightHrsInMin, day0)?.epochSeconds
         )
         assertEquals(
-            Instant.fromEpochSeconds(eightHrsInSec).epochSeconds,
+            Instant.fromEpochSeconds(eightHrsInSec + 60).epochSeconds,
             timecard5.calculateExpectedEndTime(eightHrsInMin, day0)?.epochSeconds
         )
         assertEquals(
-            timeEntryInDay1.start.plus(eightHrsInMin, DateTimeUnit.MINUTE).epochSeconds,
+            timeEntryInDay1.start.plus(eightHrsInMin + 1, DateTimeUnit.MINUTE).epochSeconds,
             timecard5.calculateExpectedEndTime(eightHrsInMin, day1)?.epochSeconds
         )
         assertEquals(
-            timeEntryInDay2NoEnd.start.plus(eightHrsInMin, DateTimeUnit.MINUTE).epochSeconds,
+            timeEntryInDay2NoEnd.start.plus(eightHrsInMin + 1, DateTimeUnit.MINUTE).epochSeconds,
             timecard5.calculateExpectedEndTime(eightHrsInMin, day2)?.epochSeconds
         )
         assertEquals(
-            timeEntryInDay1.start.plus(eightHrsInMin, DateTimeUnit.MINUTE).epochSeconds,
+            timeEntryInDay1.start.plus(eightHrsInMin + 1, DateTimeUnit.MINUTE).epochSeconds,
             timecard6.calculateExpectedEndTime(eightHrsInMin, day1)?.epochSeconds
         )
         assertEquals(
-            Instant.fromEpochSeconds(eightHrsInSec + 60).epochSeconds,
+            Instant.fromEpochSeconds(eightHrsInSec + 2 * 60).epochSeconds,
             timecard7.calculateExpectedEndTime(eightHrsInMin, day0)?.epochSeconds
         )
         assertEquals(
-            timeEntryAcrossTwoDays.start.plus(eightHrsInMin, DateTimeUnit.MINUTE).epochSeconds,
+            timeEntryAcrossTwoDays.start.plus(eightHrsInMin + 1, DateTimeUnit.MINUTE).epochSeconds,
             timecard7.calculateExpectedEndTime(eightHrsInMin, day1)?.epochSeconds
         )
         assertEquals(
-            timeEntryAcrossTwoDays.start.plus(eightHrsInMin, DateTimeUnit.MINUTE).epochSeconds,
+            timeEntryAcrossTwoDays.start.plus(eightHrsInMin + 1, DateTimeUnit.MINUTE).epochSeconds,
             timecard7.calculateExpectedEndTime(eightHrsInMin, day2)?.epochSeconds
         )
     }

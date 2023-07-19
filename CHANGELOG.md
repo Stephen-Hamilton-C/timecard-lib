@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2023-07-19
+
+### Fixed
+- `Timecard.calculateExpectedEndTime()` now reports the time the user is finished rather than the last minute they need to work (#4)
+
+
+
 ## [2.0.0] - 2023-06-09
 
 ### Added
@@ -16,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Timecard.fromString()` was updated to comply with this change as well
 - **[BREAKING]** `TimeEntry.toString()` now stores Instants as epoch milliseconds rather than epoch seconds
     - `TimeEntry.fromString()` was updated to comply with this change as well
+
+
 
 ## [1.0.0] - 2023-06-01
 - Initial release

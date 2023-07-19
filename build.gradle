@@ -8,7 +8,7 @@ apply plugin: 'kotlin-multiplatform'
 apply plugin: 'kotlinx-serialization'
 
 group = 'com.github.stephenhamiltonc'
-version = '2.0.0'
+version = '2.0.1'
 
 repositories {
     google()
