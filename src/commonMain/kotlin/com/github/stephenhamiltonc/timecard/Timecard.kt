@@ -287,6 +287,7 @@ class Timecard(
         if(entriesForDate.isEmpty() && date != LocalDate.today()) return null
 
         val startTime = entriesForDate.firstOrNull()?.start ?: Clock.System.now()
-        return startTime.plus(minutesToWork + minutesOnBreak, DateTimeUnit.MINUTE)
+        // See #4 for why we're adding 1 more minute here
+        return startTime.plus(minutesToWork + minutesOnBreak + 1, DateTimeUnit.MINUTE)
     }
 }
