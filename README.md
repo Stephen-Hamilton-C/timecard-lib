@@ -28,7 +28,7 @@ repositories {
       sourceSets {
           commonMain {
                dependencies {
-                   implementation("com.github.stephenhamiltonc:timecard-lib:2.0.0")
+                   implementation("com.github.stephenhamiltonc:timecard-lib:2.0.1")
                }
           }
       }
@@ -39,7 +39,7 @@ repositories {
 
   ```
   dependencies {
-      implementation("com.github.stephenhamiltonc:timecard-lib:2.0.0")
+      implementation("com.github.stephenhamiltonc:timecard-lib:2.0.1")
   }
   ```
 
