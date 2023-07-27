@@ -59,3 +59,6 @@ You can use their return `ClockResult` to find out why they were canceled.
 `Timecard` and `TimeEntry` are kotlinx `Serializable`,
 so you can turn a `Timecard` into JSON or other preferred data format using
 [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization)
+
+## API
+You can read up on the API [here](https://stephen-hamilton-c.github.io/timecard-lib/).
