@@ -27,6 +27,7 @@ replay_pid*
 **/build/
 !src/**/build/
 local.properties
+.kotlin
 
 # Ignore Gradle GUI config
 gradle-app.setting
