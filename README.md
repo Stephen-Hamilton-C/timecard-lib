@@ -28,7 +28,7 @@ repositories {
       sourceSets {
           commonMain {
                dependencies {
-                   implementation("com.github.stephenhamiltonc:timecard-lib:2.0.1")
+                   implementation("com.github.stephenhamiltonc:timecard-lib:2.0.2")
                }
           }
       }
@@ -39,9 +39,10 @@ repositories {
 
   ```
   dependencies {
-      implementation("com.github.stephenhamiltonc:timecard-lib:2.0.1")
+      implementation("com.github.stephenhamiltonc:timecard-lib:2.0.2")
   }
   ```
+Note that this library requires Java 17 or higher.
 
 ## Usage
 Your starting point is the `Timecard` class, which holds and manages all `TimeEntry` instances.
