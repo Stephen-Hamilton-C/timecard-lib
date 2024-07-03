@@ -216,13 +216,14 @@ class Timecard(
      * Gets the last time used for work/break calculations
      * @param time The time that may exist
      * @param previousTime The time before the time that may exist
+     * @param includeNow Determines whether NOW should be returned if previousTime is in TODAY.
      */
-    private fun getLastTime(time: Instant?, previousTime: Instant): Instant? {
+    private fun getLastTime(time: Instant?, previousTime: Instant, includeNow: Boolean = false): Instant? {
         if(time == null) {
             val now = Clock.System.now()
             return if(now.toLocalDate() == previousTime.toLocalDate()) {
                 // These are the same day, use NOW for calculation
-                now
+                if(includeNow) now else null
             } else {
                 // Not on the same day, likely looking at history
                 null
@@ -255,16 +256,18 @@ class Timecard(
      * If clocked out, this includes minutes since last clocked out,
      * if the given date is TODAY
      * @param date The day to run this calculation on. Defaults to TODAY
+     * @param includeNow Whether the calculated time should assume the user is currently on break.
+     *                   This only applies if the date is TODAY.
      * @return The number of minutes that have been logged as on break
      */
-    fun calculateMinutesOnBreak(date: LocalDate = LocalDate.today()): Long {
+    fun calculateMinutesOnBreak(date: LocalDate = LocalDate.today(), includeNow: Boolean = true): Long {
         var totalMinutes = 0L
         val entriesForDate = filterByDay(date)
         for((i, currentEntry) in entriesForDate.withIndex()) {
             val nextEntry = entriesForDate.getOrNull(i + 1)
 
             if(currentEntry.end != null) {
-                val nextStartTime = getLastTime(nextEntry?.start, currentEntry.end) ?: continue
+                val nextStartTime = getLastTime(nextEntry?.start, currentEntry.end, includeNow) ?: continue
                 val duration = nextStartTime - currentEntry.end
                 totalMinutes += duration.inWholeMinutes
             }
