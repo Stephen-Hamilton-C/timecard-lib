@@ -218,7 +218,7 @@ class Timecard(
      * @param previousTime The time before the time that may exist
      * @param includeNow Determines whether NOW should be returned if previousTime is in TODAY.
      */
-    private fun getLastTime(time: Instant?, previousTime: Instant, includeNow: Boolean = false): Instant? {
+    private fun getLastTime(time: Instant?, previousTime: Instant, includeNow: Boolean = true): Instant? {
         if(time == null) {
             val now = Clock.System.now()
             return if(now.toLocalDate() == previousTime.toLocalDate()) {
@@ -238,12 +238,14 @@ class Timecard(
      * If clocked in, this includes minutes since last clocked in,
      * if the given date is TODAY
      * @param date The day to run this calculation on. Defaults to TODAY
+     * @param includeNow Whether the calculated time should assume the user is currently working.
+     *                   This only applies if the date is TODAY.
      * @return The number of minutes that have been logged as work
      */
-    fun calculateMinutesWorked(date: LocalDate = LocalDate.today()): Long {
+    fun calculateMinutesWorked(date: LocalDate = LocalDate.today(), includeNow: Boolean = true): Long {
         var totalMinutes = 0L
         for(entry in filterByDay(date)) {
-            val endTime = getLastTime(entry.end, entry.start) ?: continue
+            val endTime = getLastTime(entry.end, entry.start, includeNow) ?: continue
             val duration = endTime - entry.start
             totalMinutes += duration.inWholeMinutes
         }

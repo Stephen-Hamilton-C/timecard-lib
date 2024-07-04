@@ -401,6 +401,18 @@ class TimecardTest {
     }
 
     @Test
+    fun testCalculateMinutesWorkedIncludingNow() {
+        val now = Clock.System.now()
+        val earlierTime = now.minus(15, DateTimeUnit.MINUTE)
+        val timecard = Timecard(mutableListOf(
+               TimeEntry(earlierTime)
+        ))
+
+        assertEquals(15, timecard.calculateMinutesWorked())
+        assertEquals(0, timecard.calculateMinutesWorked(LocalDate.today(), false))
+    }
+
+    @Test
     fun testCalculateMinutesOnBreak() {
         assertEquals(0, timecard1.calculateMinutesOnBreak(day3))
         assertEquals(0, timecard2.calculateMinutesOnBreak(day3))
@@ -422,6 +434,19 @@ class TimecardTest {
         assertEquals(1, timecard7.calculateMinutesOnBreak(day0))
         assertEquals(0, timecard7.calculateMinutesOnBreak(day1))
         assertEquals(0, timecard7.calculateMinutesOnBreak(day2))
+    }
+
+    @Test
+    fun testCalculateMinutesOnBreakIncludingNow() {
+        val now = Clock.System.now()
+        val time1 = now.minus(30, DateTimeUnit.MINUTE)
+        val time2 = now.minus(15, DateTimeUnit.MINUTE)
+        val timecard = Timecard(mutableListOf(
+            TimeEntry(time1, time2)
+        ))
+
+        assertEquals(15, timecard.calculateMinutesOnBreak())
+        assertEquals(0, timecard.calculateMinutesOnBreak(LocalDate.today(), false))
     }
 
     @Test
