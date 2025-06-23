@@ -53,6 +53,7 @@ class Timecard(
          * @param data The data to load the Timecard from
          */
         @JvmStatic
+        @Deprecated("Serialization with toString and fromString is obsolete. Use kotlinx.serialization instead.")
         fun fromString(data: String): Timecard {
             val newEntries = mutableListOf<TimeEntry>()
             val entriesData = data.split("\n")
@@ -146,13 +147,14 @@ class Timecard(
     /**
      * Attempts to log a clock in
      * @param time The time to clock in. Defaults to NOW
+     * @param tag The user-defined tag for the new time entry
      * @return
      * - NO_OP if already clocked in
      * - TIME_IN_FUTURE if the provided time is in the future
      * - TIME_TOO_EARLY if the provided time is before the last clock out time
      * - SUCCESS if clocking in finished
      */
-    fun clockIn(time: Instant = Clock.System.now()): ClockResult {
+    fun clockIn(time: Instant = Clock.System.now(), tag: String? = null): ClockResult {
         if(isClockedIn) return ClockResult.NO_OP
         if(timeIsFuture(time)) return ClockResult.TIME_IN_FUTURE
         
@@ -162,7 +164,7 @@ class Timecard(
         if(lastEntry != null && lastEntry.end!! >= time)
             return ClockResult.TIME_TOO_EARLY
 
-        val newEntry = TimeEntry(time)
+        val newEntry = TimeEntry(time, tag = tag)
         _entries.add(newEntry)
 
         return ClockResult.SUCCESS
@@ -185,7 +187,7 @@ class Timecard(
         if(lastEntry.start >= time)
             return ClockResult.TIME_TOO_EARLY
 
-        val newEntry = TimeEntry(lastEntry.start, time)
+        val newEntry = lastEntry.copy(end = time)
         _entries.removeLast()
         _entries.add(newEntry)
 
@@ -205,7 +207,7 @@ class Timecard(
             _entries.removeLast()
         } else {
             val lastEntry = _entries.removeLast()
-            val newEntry = TimeEntry(lastEntry.start)
+            val newEntry = lastEntry.copy(end = null)
             _entries.add(newEntry)
         }
 

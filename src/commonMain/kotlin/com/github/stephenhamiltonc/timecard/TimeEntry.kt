@@ -9,7 +9,7 @@ import kotlin.jvm.JvmStatic
  * A null end time means the user is still clocked in.
  */
 @Serializable
-data class TimeEntry(val start: Instant, val end: Instant? = null) {
+data class TimeEntry(val start: Instant, val end: Instant? = null, val tag: String? = null) {
     init {
         if(end != null && start > end)
             throw IllegalStateException("A TimeEntry cannot have a start time that is after an end time!")
@@ -24,6 +24,7 @@ data class TimeEntry(val start: Instant, val end: Instant? = null) {
          * @throws IllegalStateException If the start and end times in the data are not in chronological order
          */
         @JvmStatic
+        @Deprecated("Serialization with toString and fromString is obsolete. Use kotlinx.serialization instead.")
         fun fromString(data: String): TimeEntry {
             val dataSplit = data.split(",")
             val start = Instant.fromEpochMilliseconds(dataSplit[0].toLong())

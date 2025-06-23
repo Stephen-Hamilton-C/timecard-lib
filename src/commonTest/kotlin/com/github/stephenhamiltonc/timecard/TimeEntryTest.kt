@@ -26,8 +26,8 @@ class TimeEntryTest {
         instant3 = Instant.fromEpochMilliseconds(123457000L)
         instant4 = Instant.fromEpochMilliseconds(987654321000L)
 
-        timeEntry1 = TimeEntry(instant1, instant2)
-        timeEntry2 = TimeEntry(instant3, instant4)
+        timeEntry1 = TimeEntry(instant1, instant2, "First TimeEntry")
+        timeEntry2 = TimeEntry(instant3, instant4, "Second, symbol time! !@#$%^&*()-_=+[{}]\\|;:'\",.<>/?")
         timeEntry3 = TimeEntry(instant1, instant4)
         timeEntry4 = TimeEntry(instant1, instant4)
         timeEntry5 = TimeEntry(instant1)
@@ -57,8 +57,8 @@ class TimeEntryTest {
 
     @Test
     fun testFrom() {
-        assertEquals(timeEntry1, TimeEntry.fromString("0,123456000"))
-        assertEquals(timeEntry2, TimeEntry.fromString("123457000,987654321000"))
+        assertEquals(timeEntry1.copy(tag = null), TimeEntry.fromString("0,123456000"))
+        assertEquals(timeEntry2.copy(tag = null), TimeEntry.fromString("123457000,987654321000"))
         assertEquals(timeEntry3, TimeEntry.fromString("0,987654321000"))
         assertEquals(timeEntry4, TimeEntry.fromString("0,987654321000"))
         assertEquals(timeEntry5, TimeEntry.fromString("0"))
@@ -85,5 +85,14 @@ class TimeEntryTest {
         assertNotEquals(timeEntry4, timeEntry5)
         assertNotEquals<TimeEntry?>(null, timeEntry1)
         assertNotEquals<Any>(timeEntry1, 0)
+    }
+
+    @Test
+    fun testTag() {
+        assertEquals("First TimeEntry", timeEntry1.tag)
+        assertEquals("Second, symbol time! !@#$%^&*()-_=+[{}]\\|;:'\",.<>/?", timeEntry2.tag)
+        assertNull(timeEntry3)
+        assertNull(timeEntry4)
+        assertNull(timeEntry5)
     }
 }
